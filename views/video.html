@@ -6,12 +6,13 @@
 </head>
 <body style="background-color: #121212;">
 	<div class="centre" style="font-family: arial;">
-		<h3 style="color: white;">{show_capital} Season {season_num} Episode {episode_num}</h3>
+		<h1 style="color: white;">{show_capital} Season {season_num} Episode {episode_num}</h1>
 		<video width="720" controls autoplay name="media">
 		    <source src="../../../../static/shows/{video_path}.mp4" type="video/mp4">
 		    Your browser does not support HTML5 video.
 		</video>
-		<p style="color: white;">Click <a style="color: gray;" href="/shows/{season_path}">here</a> to go back</p>
+		<p><a style="color: gray;" href="/playnext/">Next Episode</a></p>
+		<p style="color: white;">Click <a style="color: gray;" href="/shows/{season_path}">here</a> to go back to the season listing</p>
 	</div>
 </body>
 </html>

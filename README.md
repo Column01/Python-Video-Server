@@ -2,9 +2,14 @@
 A flask server to server mp4 to a whitelisted set of users based on IP address.
 
 ## Setup
-- Add your public IPV4 in `decorators.py` to the `accepted_ips` list in order to watch content from anywhere by accessing your public IP on port 80 (`5.5.5.5:80` for example) in a web browser.
+Add your public IPV4 in a file called `ips.txt` in the root of the server directory. Inside, place IPs like this:
 
-Then
+	ip.1.goes.here,
+	ip.2.goes.here
+
+**Each new ip requires a comma after the last ip, a new line and no comma at the end of the last IP (similar to JSON)**
+
+Then you need to do the following:
 
 1. `pip install virtualenv`
 2. `virtualenv python_video_server`
@@ -25,14 +30,14 @@ Example directory tree:
 	+--static
 		|
 		+--shows
-		|	|
-		|	+--letterkenny
-		|		| 
-		|		+--s1
-		|			|
-		|			+--e1.mp4
-		|			|
-		|			+--e2.mp4
+		|   |
+		|   +--letterkenny
+		|       | 
+		|       +--s1
+		|           |
+		|           +--e1.mp4
+		|           |
+		|           +--e2.mp4
 		+--styles
-		 	|
-		 	+--style.css
+			|
+			+--style.css

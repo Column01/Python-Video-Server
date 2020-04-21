@@ -1,11 +1,11 @@
 from functools import wraps
 from flask import request, abort
 
-
-accepted_ips = ["127.0.0.1"]
+from misc import *
 
 
 def ip_filtered(f):
+    accepted_ips = get_ip_whitelist()
     @wraps(f)
     def wrapped(*args, **kwargs):
         if request.remote_addr in accepted_ips or is_local_ip():
@@ -18,3 +18,7 @@ def ip_filtered(f):
 def is_local_ip():
     addr = request.remote_addr
     return addr.startswith("192.168") or addr.startswith("10") or addr.startswith("172.16")
+
+
+def get_ip_whitelist():
+    return get_file("ips.txt").strip("\n").strip(" ").split(",")

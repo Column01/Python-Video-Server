@@ -1,29 +1,11 @@
 import glob
 import os
+from urllib.parse import urlparse
 
-from flask import Flask, abort, request
+from flask import Flask, abort, request, redirect
 
 from decorators import ip_filtered
-
-
-def root_dir():
-    return os.path.abspath(os.path.dirname(__file__))
-
-
-def get_sub_folders(folder):
-    return [f for f in sorted(os.listdir(folder)) if os.path.isdir(os.path.join(folder, f))]
-
-
-def get_folder_files(folder):
-    return [f for f in sorted(os.listdir(folder)) if os.path.isfile(os.path.join(folder, f)) and f.endswith(".mp4")]
-
-
-def get_file(filename):
-    try:
-        src = os.path.join(root_dir(), filename)
-        return open(src).read()
-    except IOError as exc:
-        return str(exc)
+from misc import *
 
 
 server = Flask(__name__)
@@ -45,7 +27,7 @@ def list_shows():
     formatted_shows = []
     for show in shows:
         f = f'''
-            <a style="color: gray;" href="/shows/{show}">{show.capitalize()}</a>
+            <h3><a style="color: gray;" href="/shows/{show}">{show.capitalize()}</a></h3>
             <br />
             '''
         formatted_shows.append(f)
@@ -62,7 +44,7 @@ def list_seasons(show):
     formatted_seasons = []
     for number in season_numbers:
         f = f'''
-            <a style="color: gray;" href="/shows/{show}/s{number}">Season {number}</a>
+            <h3><a style="color: gray;" href="/shows/{show}/s{number}">Season {number}</a></h3>
             <br />
             '''
         formatted_seasons.append(f)
@@ -79,7 +61,7 @@ def list_episodes(show, season):
     formatted_episodes = []
     for number in episode_numbers:
         f = f'''
-            <a style="color: gray;" href="/play/{show}/{season}/e{number}">Episode {number}</a>
+            <h3><a style="color: gray;" href="/play/{show}/{season}/e{number}">Episode {number}</a></h3>
             <br />
             '''
         formatted_episodes.append(f)
@@ -114,7 +96,8 @@ def play_show_episode(show, season, episode):
                                                     season_num=season_num,
                                                     episode_num=episode_num,
                                                     season_path=season_path,
-                                                    video_path=video_path
+                                                    video_path=video_path,
+                                                    show=show
                                                     )
             else:
                 abort(404)
@@ -122,6 +105,35 @@ def play_show_episode(show, season, episode):
             abort(404)
     else:
         abort(404)
+
+
+@server.route("/playnext")
+@server.route("/playnext/")
+def play_next_episode():
+    referrer = request.referrer
+    if referrer is None:
+        return "You did not go to this page from a previous episode so we cannot find the next episode."
+    else:
+        path = [item for item in urlparse(referrer).path.split("/") if item != ""]
+        if len(path) == 4:
+            show = path[1]
+            season = path[2]
+            episode = path[3]
+            season_episodes = get_folder_files(f"static/shows/{show}/{season}")
+            next_episode_num = int(episode[1]) + 1
+            next_episode = f"e{next_episode_num}"
+            if next_episode + ".mp4" in season_episodes:
+                return redirect(f"/../play/{show}/{season}/{next_episode}")
+            else:
+                seasons = get_sub_folders(f"static/shows/{show}")
+                next_season_num = int(season[1]) + 1
+                next_season = f"s{next_season_num}"
+                if next_season in seasons:
+                    next_season_episodes = get_folder_files(f"static/shows/{show}/{next_season}")
+                    next_episode = os.path.splitext(next_season_episodes[0])[0]
+                    return redirect(f"/../play/{show}/{next_season}/{next_episode}")
+                else:
+                    return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show}. Sorry!</h1>"
 
 
 if __name__ == "__main__":

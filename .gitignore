@@ -1,0 +1,12 @@
+
+python_video_streaming/
+
+*.mp4
+
+*.code-workspace
+
+**__pycache__/
+
+.vscode/
+
+activate.ps1

@@ -1,19 +1,18 @@
 <!DOCTYPE html> 
 <html>
 <head>
-	<title>{show_capital} S{season_num}:E{episode_num}</title>
+	<title>{movie_title}</title>
 	<link rel="stylesheet" type="text/css" href="../../../../static/styles/style.css">
 	<link href="https://vjs.zencdn.net/7.7.5/video-js.css" rel="stylesheet">
 </head>
 <body style="background-color: #121212;">
 	<div class="centre" style="font-family: arial;">
-		<h1 style="color: white;">{show_capital} Season {season_num} Episode {episode_num}</h1>
+		<h1 style="color: white;">{movie_title}</h1>
 		<video id="my-video" class="video-js vjs-big-play-centered" preload="auto" width="720" controls autoplay data-setup="{{}}">
-		    <source src="../../../../../static/shows/{video_path}.mp4" type="video/mp4">
+		    <source src="../../../../static/movies/{movie}/movie.mp4" type="video/mp4">
 		    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
 		</video>
-		<p><a style="color: gray;" href="/playnext/">Next Episode</a></p>
-		<p style="color: white;">Click <a style="color: gray;" href="/shows/{season_path}">here</a> to view season {season_num}'s episodes</p>
+		<p style="color: white;">Click <a style="color: gray;" href="/movies/">here</a> to view other titles</p>
 		<script src="https://vjs.zencdn.net/7.7.5/video.js"></script>
 	</div>
 </body>

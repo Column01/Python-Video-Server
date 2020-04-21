@@ -27,6 +27,23 @@ def home():
     return get_file("views/home.html")
 
 
+@server.route("/movies")
+@server.route("/movies/")
+@ip_filtered
+def list_movies():
+    movies = get_sub_folders("static/movies")
+    formatted_movies = []
+    for movie in movies:
+        title = get_file(f"static/movies/{movie}/title.txt")
+        f = f'''
+            <h3><a style="color: gray;" href="/play/movie/{movie}/">{title}</a></h3>
+            '''
+        formatted_movies.append(f)
+    formatted_movies = " ".join(formatted_movies)
+    html = get_file("views/movies.html").format(movies=formatted_movies)
+    return html
+
+
 @server.route("/shows/")
 @server.route("/shows")
 @ip_filtered
@@ -67,7 +84,7 @@ def list_episodes(show, season):
     formatted_episodes = []
     for number in episode_numbers:
         f = f'''
-            <h3><a style="color: gray;" href="/play/{show}/{season}/e{number}">Episode {number}</a></h3>
+            <h3><a style="color: gray;" href="/play/show/{show}/{season}/e{number}">Episode {number}</a></h3>
             '''
         formatted_episodes.append(f)
     formatted_episodes = " ".join(formatted_episodes)
@@ -81,36 +98,57 @@ def list_episodes(show, season):
     return html
     
 
-@server.route("/play/<string:show>/<string:season>/<string:episode>")
-@server.route("/play/<string:show>/<string:season>/<string:episode>/")
+@server.route("/play/<string:content_type>/<string:name>/<string:season>/<string:episode>")
+@server.route("/play/<string:content_type>/<string:name>/<string:season>/<string:episode>/")
+@server.route("/play/<string:content_type>/<string:name>")
+@server.route("/play/<string:content_type>/<string:name>/")
 @ip_filtered
-def play_show_episode(show, season, episode):
-    valid_shows = get_sub_folders("static/shows")
-    show_capital = show.capitalize()
-    season_num = season[1]
-    episode_num = episode[1]
-    if show in valid_shows:
-        valid_seasons = get_sub_folders(f"static/shows/{show}")
-        if season in valid_seasons:
-            valid_episodes = get_folder_files(f"static/shows/{show}/{season}")
-            if episode + ".mp4" in valid_episodes:
-                video_path = f"{show}/{season}/{episode}"
-                season_path = f"{show}/{season}"
-                return get_file("views/video.html").format(   
-                                                    show_capital=show_capital,
-                                                    season_num=season_num,
-                                                    episode_num=episode_num,
-                                                    season_path=season_path,
-                                                    video_path=video_path,
-                                                    show=show
-                                                    )
+def play_content(content_type, name, season=None, episode=None):
+    if content_type == "show":
+        show = name
+        valid_shows = get_sub_folders("static/shows")
+        show_capital = show.capitalize()
+        season_num = season[1]
+        episode_num = episode[1]
+        if show in valid_shows:
+            valid_seasons = get_sub_folders(f"static/shows/{show}")
+            if season in valid_seasons:
+                valid_episodes = get_folder_files(f"static/shows/{show}/{season}")
+                if episode + ".mp4" in valid_episodes:
+                    video_path = f"{show}/{season}/{episode}"
+                    season_path = f"{show}/{season}"
+                    return get_file("views/video.html").format(   
+                                                        show_capital=show_capital,
+                                                        season_num=season_num,
+                                                        episode_num=episode_num,
+                                                        season_path=season_path,
+                                                        video_path=video_path,
+                                                        show=show
+                                                        )
+                else:
+                    abort(404)
             else:
                 abort(404)
         else:
             abort(404)
-    else:
-        abort(404)
-
+    if content_type == "movie":
+        movie = name
+        valid_movies = get_sub_folders("static/movies")
+        if movie in valid_movies:
+            movies = get_folder_files(f"static/movies/{movie}")
+            print(movies)
+            for f in movies:
+                if f == "movie.mp4":
+                    title = get_file(f"static/movies/{movie}/title.txt")
+                    return get_file("views/movie.html").format(
+                                                        movie_title=title,
+                                                        movie=movie
+                                                        )
+                else:
+                    abort(404)
+        else:
+            abort(404)
+             
 
 @server.route("/playnext")
 @server.route("/playnext/")
@@ -128,7 +166,7 @@ def play_next_episode():
             next_episode_num = int(episode[1]) + 1
             next_episode = f"e{next_episode_num}"
             if next_episode + ".mp4" in season_episodes:
-                return redirect(f"/../play/{show}/{season}/{next_episode}")
+                return redirect(f"/../play/show/{show}/{season}/{next_episode}")
             else:
                 seasons = get_sub_folders(f"static/shows/{show}")
                 next_season_num = int(season[1]) + 1
@@ -136,7 +174,7 @@ def play_next_episode():
                 if next_season in seasons:
                     next_season_episodes = get_folder_files(f"static/shows/{show}/{next_season}")
                     next_episode = os.path.splitext(next_season_episodes[0])[0]
-                    return redirect(f"/../play/{show}/{next_season}/{next_episode}")
+                    return redirect(f"/../play/show/{show}/{next_season}/{next_episode}")
                 else:
                     return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show}. Sorry!</h1>"
 

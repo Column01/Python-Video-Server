@@ -15,7 +15,8 @@ Then you need to do the following:
 2. `virtualenv python_video_server`
 3. Activate the virtualenv (google it)
 4. `pip install flask`
-5. `python server.py`
+5. Add content by following the guide for adding [shows](#adding-a-show) or for adding [movies](#adding-a-movie) (MAKE THE FOLDERS FOR BOTH TYPES OR IT MAY BREAK THINGS!)
+5. Run it with `sudo python3 server.py` or through an admin prompt on windows (needs to bind to port 80 which is admin locked.) You can change the port in server.py and run it as a normal user if you'd like.
 
 ## Adding content
 

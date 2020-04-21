@@ -28,7 +28,6 @@ def list_shows():
     for show in shows:
         f = f'''
             <h3><a style="color: gray;" href="/shows/{show}">{show.capitalize()}</a></h3>
-            <br />
             '''
         formatted_shows.append(f)
     formatted_shows = " ".join(formatted_shows)
@@ -45,7 +44,6 @@ def list_seasons(show):
     for number in season_numbers:
         f = f'''
             <h3><a style="color: gray;" href="/shows/{show}/s{number}">Season {number}</a></h3>
-            <br />
             '''
         formatted_seasons.append(f)
     formatted_seasons = " ".join(formatted_seasons)
@@ -62,7 +60,6 @@ def list_episodes(show, season):
     for number in episode_numbers:
         f = f'''
             <h3><a style="color: gray;" href="/play/{show}/{season}/e{number}">Episode {number}</a></h3>
-            <br />
             '''
         formatted_episodes.append(f)
     formatted_episodes = " ".join(formatted_episodes)

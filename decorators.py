@@ -21,4 +21,4 @@ def is_local_ip():
 
 
 def get_ip_whitelist():
-    return get_file("ips.txt").strip("\n").strip(" ").split(",")
+    return get_file("ips.txt").replace("\n", "").strip(" ").strip().split(",")

@@ -1,7 +1,7 @@
 import glob
 import os
 
-from flask import Flask, abort, request, Response
+from flask import Flask, abort, request
 
 from decorators import ip_filtered
 
@@ -117,11 +117,11 @@ def play_show_episode(show, season, episode):
                                                     video_path=video_path
                                                     )
             else:
-                return f"<h2>{show_capital} does not have Season {season[1]} Episode {episode[1]} on the server.</h2>"
+                abort(404)
         else:
-            return f"<h2>{show_capital} does not have Season {season[1]} on the server.</h2>"
+            abort(404)
     else:
-        return f"<h2>The show \"{show}\" was not found on the server. Did you type it correctly?</h2>"
+        abort(404)
 
 
 if __name__ == "__main__":

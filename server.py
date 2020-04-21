@@ -11,6 +11,14 @@ from misc import *
 server = Flask(__name__)
 
 
+@server.before_request
+@ip_filtered
+def before_request():
+    # This function should block all people that are not IP whitelisted. I also use the @ip_filtered decorator on all other routes just in case.
+    # This should also prevent un-authorised access to the video files if someone were to find a way to directly request their contents.
+    pass
+
+
 @server.route("/")
 @server.route("/home")
 @server.route("/home/")

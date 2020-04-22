@@ -1,5 +1,6 @@
 .centre {
-	margin-left: auto; 
-	margin-right: auto; 
-	display: block;
+	margin-left: auto !important; 
+	margin-right: auto !important; 
+	display: block !important;
+	text-align: center !important;
 }

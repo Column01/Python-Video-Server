@@ -158,15 +158,16 @@ def play_next_episode():
         return "You did not go to this page from a previous episode so we cannot find the next episode."
     else:
         path = [item for item in urlparse(referrer).path.split("/") if item != ""]
-        if len(path) == 4:
-            show = path[1]
-            season = path[2]
-            episode = path[3]
+        print(path)
+        if len(path) == 5:
+            show = path[2]
+            season = path[3]
+            episode = path[4]
             season_episodes = get_folder_files(f"static/shows/{show}/{season}")
             next_episode_num = int(episode[1]) + 1
             next_episode = f"e{next_episode_num}"
             if next_episode + ".mp4" in season_episodes:
-                return redirect(f"/../play/show/{show}/{season}/{next_episode}")
+                return redirect(f"/play/show/{show}/{season}/{next_episode}")
             else:
                 seasons = get_sub_folders(f"static/shows/{show}")
                 next_season_num = int(season[1]) + 1
@@ -174,7 +175,7 @@ def play_next_episode():
                 if next_season in seasons:
                     next_season_episodes = get_folder_files(f"static/shows/{show}/{next_season}")
                     next_episode = os.path.splitext(next_season_episodes[0])[0]
-                    return redirect(f"/../play/show/{show}/{next_season}/{next_episode}")
+                    return redirect(f"/play/show/{show}/{next_season}/{next_episode}")
                 else:
                     return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show}. Sorry!</h1>"
 

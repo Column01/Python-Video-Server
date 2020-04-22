@@ -1,5 +1,6 @@
 import glob
 import os
+import string
 from urllib.parse import urlparse
 
 from flask import Flask, abort, request, redirect
@@ -52,7 +53,7 @@ def list_shows():
     formatted_shows = []
     for show in shows:
         f = f'''
-            <h3><a style="color: gray;" href="/shows/{show}">{show.capitalize()}</a></h3>
+            <h3><a style="color: gray;" href="/shows/{show}">{string.capwords(show)}</a></h3>
             '''
         formatted_shows.append(f)
     formatted_shows = " ".join(formatted_shows)
@@ -72,7 +73,7 @@ def list_seasons(show):
             '''
         formatted_seasons.append(f)
     formatted_seasons = " ".join(formatted_seasons)
-    html = get_file("views/seasons.html").format(show_capital=show.capitalize(), seasons=formatted_seasons)
+    html = get_file("views/seasons.html").format(show_capital=string.capwords(show), seasons=formatted_seasons)
     return html
 
 
@@ -80,6 +81,7 @@ def list_seasons(show):
 @server.route("/shows/<string:show>/<string:season>/")
 @ip_filtered
 def list_episodes(show, season):
+    show_capital = string.capwords(show)
     episode_numbers = [episode[1] for episode in get_folder_files(f"static/shows/{show}/{season}")]
     formatted_episodes = []
     for number in episode_numbers:
@@ -89,7 +91,7 @@ def list_episodes(show, season):
         formatted_episodes.append(f)
     formatted_episodes = " ".join(formatted_episodes)
     html = get_file("views/episodes.html").format(
-                                            show_capital=show.capitalize(), 
+                                            show_capital=show_capital, 
                                             season=season, 
                                             season_num=season[1],
                                             episodes=formatted_episodes,
@@ -107,7 +109,7 @@ def play_content(content_type, name, season=None, episode=None):
     if content_type == "show":
         show = name
         valid_shows = get_sub_folders("static/shows")
-        show_capital = show.capitalize()
+        show_capital = string.capwords(show)
         season_num = season[1]
         episode_num = episode[1]
         if show in valid_shows:
@@ -148,6 +150,8 @@ def play_content(content_type, name, season=None, episode=None):
                     abort(404)
         else:
             abort(404)
+    else:
+        abort(404)
              
 
 @server.route("/playnext")
@@ -158,7 +162,6 @@ def play_next_episode():
         return "You did not go to this page from a previous episode so we cannot find the next episode."
     else:
         path = [item for item in urlparse(referrer).path.split("/") if item != ""]
-        print(path)
         if len(path) == 5:
             show = path[2]
             season = path[3]
@@ -178,6 +181,8 @@ def play_next_episode():
                     return redirect(f"/play/show/{show}/{next_season}/{next_episode}")
                 else:
                     return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show}. Sorry!</h1>"
+        else:
+            abort(404)
 
 
 if __name__ == "__main__":

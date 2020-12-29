@@ -51,8 +51,11 @@ def list_shows():
     shows = get_sub_folders("static/shows")
     formatted_shows = []
     for show in shows:
+        show_name = get_file(f"static/shows/{show}/title.txt")
+        if show_name == "File not found":
+            show_name = string.capwords(show)
         f = f'''
-            <h3><a style="color: gray;" href="/shows/{show}">{string.capwords(show)}</a></h3>
+            <h3><a style="color: gray;" href="/shows/{show}">{show_name}</a></h3>
             '''
         formatted_shows.append(f)
     formatted_shows = " ".join(formatted_shows)

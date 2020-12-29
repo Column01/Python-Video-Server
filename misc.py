@@ -17,5 +17,5 @@ def get_file(filename):
     try:
         src = os.path.join(root_dir(), filename)
         return open(src).read()
-    except IOError as exc:
+    except IOError:
         return "File not found"

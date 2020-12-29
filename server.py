@@ -1,4 +1,3 @@
-import glob
 import os
 import string
 from urllib.parse import urlparse
@@ -6,7 +5,7 @@ from urllib.parse import urlparse
 from flask import Flask, abort, request, redirect
 
 from decorators import ip_filtered
-from misc import *
+from misc import get_file, get_folder_files, get_sub_folders
 
 
 server = Flask(__name__)
@@ -65,6 +64,9 @@ def list_shows():
 @server.route("/shows/<string:show>/")
 @ip_filtered
 def list_seasons(show):
+    show_name = get_file(f"static/shows/{show}/title.txt")
+    if show_name == "File not found":
+        show_name = string.capwords(show)
     season_numbers = [season[1] for season in get_sub_folders(f"static/shows/{show}")]
     formatted_seasons = []
     for number in season_numbers:
@@ -73,7 +75,7 @@ def list_seasons(show):
             '''
         formatted_seasons.append(f)
     formatted_seasons = " ".join(formatted_seasons)
-    html = get_file("views/seasons.html").format(show_capital=string.capwords(show), seasons=formatted_seasons)
+    html = get_file("views/seasons.html").format(show_name=show_name, seasons=formatted_seasons)
     return html
 
 
@@ -81,7 +83,9 @@ def list_seasons(show):
 @server.route("/shows/<string:show>/<string:season>/")
 @ip_filtered
 def list_episodes(show, season):
-    show_capital = string.capwords(show)
+    show_name = get_file(f"static/shows/{show}/title.txt")
+    if show_name == "File not found":
+        show_name = string.capwords(show)
     episode_numbers = [episode[1] for episode in get_folder_files(f"static/shows/{show}/{season}")]
     formatted_episodes = []
     for number in episode_numbers:
@@ -90,14 +94,13 @@ def list_episodes(show, season):
             '''
         formatted_episodes.append(f)
     formatted_episodes = " ".join(formatted_episodes)
-    html = get_file("views/episodes.html").format(
-                                            show_capital=show_capital, 
-                                            season=season, 
-                                            season_num=season[1],
-                                            episodes=formatted_episodes,
-                                            show=show
-                                            )
-    return html
+    return get_file("views/episodes.html").format(
+        show_name=show_name,
+        season=season,
+        season_num=season[1],
+        episodes=formatted_episodes,
+        show=show
+    )
     
 
 @server.route("/play/<string:content_type>/<string:name>/<string:season>/<string:episode>")
@@ -109,7 +112,9 @@ def play_content(content_type, name, season=None, episode=None):
     if content_type == "show":
         show = name
         valid_shows = get_sub_folders("static/shows")
-        show_capital = string.capwords(show)
+        show_name = get_file(f"static/shows/{show}/title.txt")
+        if show_name == "File not found":
+            show_name = string.capwords(show)
         season_num = season[1]
         episode_num = episode[1]
         if show in valid_shows:
@@ -119,14 +124,14 @@ def play_content(content_type, name, season=None, episode=None):
                 if episode + ".mp4" in valid_episodes:
                     video_path = f"{show}/{season}/{episode}"
                     season_path = f"{show}/{season}"
-                    return get_file("views/video.html").format(   
-                                                        show_capital=show_capital,
-                                                        season_num=season_num,
-                                                        episode_num=episode_num,
-                                                        season_path=season_path,
-                                                        video_path=video_path,
-                                                        show=show
-                                                        )
+                    return get_file("views/video.html").format(
+                        show_name=show_name,
+                        season_num=season_num,
+                        episode_num=episode_num,
+                        season_path=season_path,
+                        video_path=video_path,
+                        show=show
+                    )
                 else:
                     abort(404)
             else:
@@ -138,14 +143,13 @@ def play_content(content_type, name, season=None, episode=None):
         valid_movies = get_sub_folders("static/movies")
         if movie in valid_movies:
             movies = get_folder_files(f"static/movies/{movie}")
-            print(movies)
             for f in movies:
                 if f == "movie.mp4":
                     title = get_file(f"static/movies/{movie}/title.txt")
                     return get_file("views/movie.html").format(
-                                                        movie_title=title,
-                                                        movie=movie
-                                                        )
+                        movie_title=title,
+                        movie=movie
+                    )
                 else:
                     abort(404)
         else:

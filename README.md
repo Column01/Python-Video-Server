@@ -4,12 +4,7 @@ A flask server to server mp4 to a whitelisted set of users based on IP address.
 
 ## Setup
 
-Add your public IPV4 in a file called `ips.txt` in the root of the server directory. Inside, place IPs like this:
-    ip.1.goes.here,
-    ip.2.goes.here
-**Each new ip requires a comma after the last ip, a new line and no comma at the end of the last IP (similar to JSON)**
-
-Then you need to do the following:
+### Installation
 
 1. `pip install virtualenv`
 2. `virtualenv python_video_server`
@@ -17,6 +12,15 @@ Then you need to do the following:
 4. `pip install flask`
 5. Add content by following the guide for adding [shows](#adding-a-show) or for adding [movies](#adding-a-movie) (MAKE THE FOLDERS FOR BOTH TYPES OR IT MAY BREAK THINGS!)
 6. Run it with `sudo python3 server.py` or through an admin prompt on windows (needs to bind to port 80 which is admin locked.) You can change the port in server.py and run it as a normal user if you'd like.
+
+### Adding IPs to the whitelist
+
+Add your public IPV4 and any others in a file called `ips.txt` in the root of the server directory. Inside, place IPs like this:
+
+    ip.1.goes.here,
+    ip.2.goes.here
+
+Each new ip requires a comma after the last ip, a new line and no comma at the end of the last IP (similar to JSON)
 
 ## Adding content
 

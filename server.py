@@ -89,7 +89,7 @@ def list_episodes(show, season):
     show_name = get_file(f"static/shows/{show}/title.txt")
     if show_name == "File not found":
         show_name = string.capwords(show)
-    episode_numbers = [episode[1] for episode in get_folder_files(f"static/shows/{show}/{season}")]
+    episode_numbers = [episode[1:].split(".")[0] for episode in get_folder_files(f"static/shows/{show}/{season}")]
     formatted_episodes = []
     for number in episode_numbers:
         f = f'''
@@ -100,7 +100,7 @@ def list_episodes(show, season):
     return get_file("views/episodes.html").format(
         show_name=show_name,
         season=season,
-        season_num=season[1],
+        season_num=season[1:],
         episodes=formatted_episodes,
         show=show
     )
@@ -118,8 +118,8 @@ def play_content(content_type, name, season=None, episode=None):
         show_name = get_file(f"static/shows/{show}/title.txt")
         if show_name == "File not found":
             show_name = string.capwords(show)
-        season_num = season[1]
-        episode_num = episode[1]
+        season_num = season[1:]
+        episode_num = episode[1:].split(".")[0]
         if show in valid_shows:
             valid_seasons = get_sub_folders(f"static/shows/{show}")
             if season in valid_seasons:
@@ -187,7 +187,10 @@ def play_next_episode():
                     next_episode = os.path.splitext(next_season_episodes[0])[0]
                     return redirect(f"/play/show/{show}/{next_season}/{next_episode}")
                 else:
-                    return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show}. Sorry!</h1>"
+                    show_name = get_file(f"static/shows/{show}/title.txt")
+                    if show_name == "File not found":
+                        show_name = string.capwords(show)
+                    return f"<h1 style=\"font-family: arial;\">You have finished watching all episodes for {show_name}. Sorry!</h1>"
         else:
             abort(404)
 

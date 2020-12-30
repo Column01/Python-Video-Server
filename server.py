@@ -89,7 +89,7 @@ def list_episodes(show, season):
     show_name = get_file(f"static/shows/{show}/title.txt")
     if show_name == "File not found":
         show_name = string.capwords(show)
-    episode_numbers = [episode[1:].split(".")[0] for episode in get_folder_files(f"static/shows/{show}/{season}")]
+    episode_numbers = sorted([episode[1:].split(".")[0] for episode in get_folder_files(f"static/shows/{show}/{season}")])
     formatted_episodes = []
     for number in episode_numbers:
         f = f'''

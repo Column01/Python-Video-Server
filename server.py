@@ -70,7 +70,7 @@ def list_seasons(show):
     show_name = get_file(f"static/shows/{show}/title.txt")
     if show_name == "File not found":
         show_name = string.capwords(show)
-    season_numbers = [season[1] for season in get_sub_folders(f"static/shows/{show}")]
+    season_numbers = [season[1:] for season in get_sub_folders(f"static/shows/{show}")]
     formatted_seasons = []
     for number in season_numbers:
         f = f'''
@@ -174,13 +174,13 @@ def play_next_episode():
             season = path[3]
             episode = path[4]
             season_episodes = get_folder_files(f"static/shows/{show}/{season}")
-            next_episode_num = int(episode[1]) + 1
+            next_episode_num = int(episode[1:]) + 1
             next_episode = f"e{next_episode_num}"
             if next_episode + ".mp4" in season_episodes:
                 return redirect(f"/play/show/{show}/{season}/{next_episode}")
             else:
                 seasons = get_sub_folders(f"static/shows/{show}")
-                next_season_num = int(season[1]) + 1
+                next_season_num = int(season[1:]) + 1
                 next_season = f"s{next_season_num}"
                 if next_season in seasons:
                     next_season_episodes = get_folder_files(f"static/shows/{show}/{next_season}")

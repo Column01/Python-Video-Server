@@ -4,8 +4,7 @@ from urllib.parse import urlparse
 
 from flask import Flask, abort, request, redirect
 
-from decorators import ip_filtered
-from misc import get_file, get_folder_files, get_sub_folders
+from misc import get_file, get_folder_files, get_sub_folders, ip_filtered
 
 
 server = Flask(__name__)

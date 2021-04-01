@@ -1,4 +1,7 @@
 import os
+from functools import wraps
+
+from flask import abort, request
 
 
 def root_dir():
@@ -19,3 +22,24 @@ def get_file(filename):
         return open(src).read()
     except IOError:
         return "File not found"
+
+
+def ip_filtered(f):
+    
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        accepted_ips = get_ip_whitelist()
+        if request.remote_addr in accepted_ips or is_local_ip():
+            return f(*args, **kwargs)
+        else:
+            return abort(403)
+    return wrapped
+
+
+def is_local_ip():
+    addr = request.remote_addr
+    return addr.startswith("192.168") or addr.startswith("10") or addr.startswith("172.16")
+
+
+def get_ip_whitelist():
+    return get_file("ips.txt").replace("\n", "").strip(" ").strip().split(",")
